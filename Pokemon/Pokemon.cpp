@@ -26,17 +26,24 @@ public:
 		cout << def + vid;
 	}
 	void Ataque(Pokemon& destino) {
-		destino.Dano(ata);
+		destino.RecebeDano(ata);
 		
 	}
-	void Dano(int dano) {
-		vid -= dano;
-		if (vid <= 0) {
-			cout << nome << " derrotado!" << endl;
+	void RecebeDano(int dano) {
+		if (dano < def) {
+			vid -= 1;
+			cout << nome << " perdeu 1 de hp!" << endl;
 		}
 		else {
-			cout << nome << " recebeu " << dano << " de dano, HP restante: " << vid << endl;
+			vid -= dano - def;
+			cout << nome << " recebeu " << dano-def <<" de dano." << endl;
+			if (
+				vid == 0
+				) {
+				cout << nome << " foi derrotado ;-(" << endl;
+			}
 		}
+		
 	}
 };
 
@@ -55,12 +62,12 @@ int main()
 		m = stoi(n2);
 		while (getline(txtpokemon, linha)) {
 			stringstream splitString(linha);
-			splitString >> name >> hp >> atk >> def >> type;
+			splitString >> name >> atk >> def >> hp >> type;
 			if (index < n) {
-			treinador1.push_back(Pokemon(name, hp, atk, def, type));
+			treinador1.push_back(Pokemon(name, atk, def, hp, type));
 			}
 			else {
-				treinador2.push_back(Pokemon(name, hp, atk, def, type));
+				treinador2.push_back(Pokemon(name, atk, def, hp, type));
 			}
 
 			index++;
@@ -69,10 +76,11 @@ int main()
 	else {
 		cout << "Erro" << endl;
 	}
-	for (Pokemon& pokemon : pokemons) {
-
-		}
-
-	
+	Pokemon& pokemon1 = treinador1[0];
+	pokemon1.Nome();
+	Pokemon& pokemon2 = treinador2[0];
+	pokemon2.Nome();
+	pokemon1.Ataque(pokemon2);
+	pokemon1.Ataque(pokemon2);
 	return 0;
 }
