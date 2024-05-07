@@ -16,14 +16,14 @@ public:
 		def = stoi(deff);
 		vid = stoi(life);
 	}
-	void Nome() {
-		cout << "Nome: " << nome << endl;
+	string Nome() {
+		return nome;
 	}
 	void Tipo() {
 		cout << "Tipo: " << tipo << endl;
 	}
-	void teste() {
-		cout << def + vid;
+	int vida() {
+		return vid;
 	}
 	void Ataque(Pokemon& destino) {
 		destino.RecebeDano(ata);
@@ -32,16 +32,9 @@ public:
 	void RecebeDano(int dano) {
 		if (dano < def) {
 			vid -= 1;
-			cout << nome << " perdeu 1 de hp!" << endl;
 		}
 		else {
 			vid -= dano - def;
-			cout << nome << " recebeu " << dano-def <<" de dano." << endl;
-			if (
-				vid == 0
-				) {
-				cout << nome << " foi derrotado ;-(" << endl;
-			}
 		}
 		
 	}
@@ -52,7 +45,8 @@ int main()
 	ifstream txtpokemon("pokemon.txt");
 	vector<Pokemon> treinador1;
 	vector<Pokemon> treinador2;
-	string n1, n2,name, hp, atk, def, type, linha;
+	vector<Pokemon> derrotados;
+	string n1, n2, name, hp, atk, def, type, linha;
 	int n = 0, m = 0, index = 0;
 	if (txtpokemon.is_open()) {
 		getline(txtpokemon, linha);
@@ -64,7 +58,7 @@ int main()
 			stringstream splitString(linha);
 			splitString >> name >> atk >> def >> hp >> type;
 			if (index < n) {
-			treinador1.push_back(Pokemon(name, atk, def, hp, type));
+				treinador1.push_back(Pokemon(name, atk, def, hp, type));
 			}
 			else {
 				treinador2.push_back(Pokemon(name, atk, def, hp, type));
@@ -76,11 +70,44 @@ int main()
 	else {
 		cout << "Erro" << endl;
 	}
+	int indice1 = 0, indice2 = 0;
 	Pokemon& pokemon1 = treinador1[0];
-	pokemon1.Nome();
 	Pokemon& pokemon2 = treinador2[0];
-	pokemon2.Nome();
-	pokemon1.Ataque(pokemon2);
-	pokemon1.Ataque(pokemon2);
-	return 0;
-}
+	while (!treinador1.empty() && !treinador2.empty()) {
+		Pokemon& pokemon1 = treinador1[0];
+		Pokemon& pokemon2 = treinador2[0];
+		pokemon1.Ataque(pokemon2);
+		if (pokemon2.vida() == 0) {
+			Pokemon pokemonDerrotado = treinador2[0];
+			cout << pokemon1.Nome() << " venceu " << pokemon2.Nome() << endl;
+			derrotados.push_back(pokemonDerrotado);
+			treinador2.erase(treinador2.begin());
+		}
+			pokemon2.Ataque(pokemon1);
+			if (pokemon1.vida() == 0) {
+				Pokemon pokemonDerrotado = treinador1[0];
+				cout << pokemon2.Nome() << " venceu " << pokemon1.Nome() << endl;
+				derrotados.push_back(pokemonDerrotado);
+				treinador1.erase(treinador1.begin());
+			}
+	}
+	if (treinador1.empty()) {
+		cout << "Jogador 2 venceu" << endl;
+		cout << "Pokemons sobreviventes:" << endl;
+		for (Pokemon& pokemons : treinador2) {
+			cout << pokemons.Nome() << endl;
+		}
+	}
+	if (treinador2.empty()) {
+		cout << "Jogador 1 venceu" << endl;
+		cout << "Pokemons sobreviventes:" << endl;
+		for (Pokemon& pokemons : treinador1) {
+			cout << pokemons.Nome() << endl;
+		}
+	}
+	cout << "Pokemons derrotados: " << endl;
+	for (Pokemon& pokemons : derrotados) {
+		cout << pokemons.Nome() << endl;
+	}
+		return 0;
+	}
