@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <unordered_map>
+
 using namespace std;
 
 // TODO: Referencie os cabeçalhos adicionais de que seu programa precisa aqui.
