@@ -3,7 +3,7 @@ using namespace std;
 
 class Pokemon {
 	string nome, tipo;
-	int hp, ata, def;
+	float hp, ata, def;
 	unordered_map<string, vector<string>> eficacia;
 public:
 	Pokemon(string name, string atk, string defe, string life, string type) {
@@ -77,6 +77,12 @@ public:
 			hp -= (ata - def);
 		}
 	}
+	string getNome() {
+		return nome;
+	}
+	float getVida() {
+		return hp;
+	}
 };
 
 ifstream entradaDados("pokemon.txt");
@@ -116,9 +122,21 @@ void Destruir(vector<Pokemon>& treinador,vector<Pokemon>& destruidos) {
 	destruidos.push_back(defeated);
 	treinador.erase(treinador.begin());
 }
-void PenaMota(vector<Pokemon>& t1, vector<Pokemon>& t2) {
+void verificaVivo(vector<Pokemon>& t1,vector<Pokemon>& t2,vector<Pokemon>& destruidos) {
+	Pokemon ataque = t1[0];
+	Pokemon defesa = t2[0];
+	if (defesa.getVida() <= 0) {
+		cout << ataque.getNome() << " derrotou " << defesa.getNome();
+		Destruir(t2, destruidos);
+	}
+	else {
+		ataque.ataque(defesa);
+	}
+}
+void PenaMota(vector<Pokemon>& t1, vector<Pokemon>& t2,vector<Pokemon>& destruidos) {
 	while (!t1.empty() || !t2.empty()) {
-
+		verificaVivo(t1, t2,destruidos);
+		verificaVivo(t2, t1,destruidos);
 	}
 }
 int main() {
