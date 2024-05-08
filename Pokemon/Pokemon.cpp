@@ -3,7 +3,7 @@ using namespace std;
 
 class Pokemon {
 	string nome, tipo;
-	float hp, ata, def;
+	int hp, ata, def;
 	unordered_map<string, vector<string>> eficacia;
 public:
 	Pokemon(string name, string atk, string defe, string life, string type) {
@@ -80,7 +80,7 @@ public:
 	string getNome() {
 		return nome;
 	}
-	float getVida() {
+	int getVida() {
 		return hp;
 	}
 };
@@ -100,11 +100,9 @@ void quantiaPokemons(int& qntj1, int& qntj2) {
 }
 //Essa função aqui eu fiz para alocar os pokemons aos seus devidos jogadores
 void alocarPokemons(vector<Pokemon>& t1, vector<Pokemon>& t2,int j1Qnt) {
-	// a string nula é para desprezar a primeira linha, pq ela contém apenas qntia Pokemon/Jogador
-	string nula, pokemons,name,atk,def,hp,type; 
+	string pokemons,name,atk,def,hp,type; 
 	int i = 0;
 	if (entradaDados.is_open()) {
-		getline(entradaDados, nula);
 		while (getline(entradaDados, pokemons)) {
 			stringstream splitString(pokemons);
 			splitString >> name >> atk >> def >> hp >> type;
@@ -114,6 +112,7 @@ void alocarPokemons(vector<Pokemon>& t1, vector<Pokemon>& t2,int j1Qnt) {
 			else {
 				t2.push_back(Pokemon(name, atk, def, hp, type));
 			}
+			i++;
 		}
 	}
 }
@@ -122,26 +121,42 @@ void Destruir(vector<Pokemon>& treinador,vector<Pokemon>& destruidos) {
 	destruidos.push_back(defeated);
 	treinador.erase(treinador.begin());
 }
-void verificaVivo(vector<Pokemon>& t1,vector<Pokemon>& t2,vector<Pokemon>& destruidos) {
-	Pokemon ataque = t1[0];
-	Pokemon defesa = t2[0];
-	if (defesa.getVida() <= 0) {
-		cout << ataque.getNome() << " derrotou " << defesa.getNome();
-		Destruir(t2, destruidos);
+bool verificaVivo(Pokemon& pokemon) {
+	if (pokemon.getVida() <= 0) {
+		return false;
 	}
-	else {
-		ataque.ataque(defesa);
-	}
-}
-void PenaMota(vector<Pokemon>& t1, vector<Pokemon>& t2,vector<Pokemon>& destruidos) {
-	while (!t1.empty() || !t2.empty()) {
-		verificaVivo(t1, t2,destruidos);
-		verificaVivo(t2, t1,destruidos);
-	}
+	else { return true; }
 }
 int main() {
 	int j1, j2;
 	vector<Pokemon> treinador1; vector<Pokemon> treinador2; vector<Pokemon> destruidos;
 	quantiaPokemons(j1, j2);
 	alocarPokemons(treinador1, treinador2, j1);
+	for (Pokemon& pokemons : treinador1) {
+		pokemons.stats();
+	}
+	cout << "Jogador2: " << endl;
+	for (Pokemon& pokemons : treinador2) {
+		pokemons.stats();
+	}
+	do {
+		{
+			Pokemon poke1 = treinador1[0];
+			Pokemon poke2 = treinador2[0];
+			if (!verificaVivo(poke2)) {
+				Destruir(treinador2, destruidos);
+			}
+			else {
+				poke1.ataque(poke2);
+			}
+
+			if (!verificaVivo(poke1)) {
+				Destruir(treinador1, destruidos);
+			}
+			else {
+				poke2.ataque(poke1);
+			}
+		}
+	}
+	while (!treinador1.empty() || !treinador2.empty());
 }
